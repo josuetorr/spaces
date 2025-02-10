@@ -18,18 +18,24 @@ import (
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
-	_, err := data.Init()
+	db, err := data.Init()
 	if err != nil {
 		panic(err)
 	}
+
+	actorRepo := data.NewActorRepo(db)
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
 	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler().ServeHTTP)
+
 	r.Get("/users/{username}", handlers.NewGetActorHandler().ServeHTTP)
+	r.Post("/users/{username}", handlers.NewPostActorHandler(&actorRepo).ServeHTTP)
+
 	r.Get("/users/{username}/inbox", handlers.NewGetInboxHandler().ServeHTTP)
-	r.Get("/users/{username}/outbox", handlers.NewGetOutboxHandler().ServeHTTP)
 	r.Post("/users/{username}/inbox", handlers.NewPostInboxHandler(log).ServeHTTP)
+
+	r.Get("/users/{username}/outbox", handlers.NewGetOutboxHandler().ServeHTTP)
 	r.Post("/users/{username}/outbox", handlers.NewPostOutboxHandler().ServeHTTP)
 
 	port := "3000"
