@@ -33,7 +33,7 @@ func main() {
 	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler().ServeHTTP)
 
 	r.Get("/users/{username}", handlers.NewGetActorHandler().ServeHTTP)
-	r.Post("/users/{username}", handlers.NewPostActorHandler(actorService).ServeHTTP)
+	r.Post("/users/{username}", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
 
 	r.Get("/users/{username}/inbox", handlers.NewGetInboxHandler().ServeHTTP)
 	r.Post("/users/{username}/inbox", handlers.NewPostInboxHandler(log).ServeHTTP)

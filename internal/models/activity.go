@@ -35,12 +35,11 @@ const (
 
 type Activity struct {
 	// TODO: add properties extended from Object: "https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object"
-	Context string       `json:"@context"`
-	Id      string       `json:"id"`
-	Type    ActivityType `json:"type"`
-	Actor   string       `json:"actor"`
-	Object  any          `json:"object"`
-	Target  string       `json:"target"`
+	Id     string       `json:"id"`
+	Type   ActivityType `json:"type"`
+	Actor  string       `json:"actor"`
+	Object any          `json:"object"`
+	Target string       `json:"target"`
 
 	Result     string `json:"result"`
 	Origin     string `json:"origin"`

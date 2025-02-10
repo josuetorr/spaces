@@ -10,8 +10,9 @@ const (
 	Service      ActorType = "Service"
 )
 
+// TODO: maybe we don't need all this info here
+// since every actor has inbox, outbox, following, followers and liked are all their respective endpoints
 type Actor struct {
-	Context   string    `json:"@context"`
 	Id        string    `json:"id"`
 	Type      ActorType `json:"type"`
 	Inbox     string    `json:"inbox"`
