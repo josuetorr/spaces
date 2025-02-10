@@ -3,15 +3,15 @@ package handlers
 import (
 	"net/http"
 
-	"gitlab.com/josuetorr/spaces/internal/data"
+	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
 type PostActorHandler struct {
-	repo *data.ActorRepo
+	actorService services.ActorService
 }
 
-func NewPostActorHandler(repo *data.ActorRepo) *PostActorHandler {
-	return &PostActorHandler{repo: repo}
+func NewPostActorHandler(actorService services.ActorService) *PostActorHandler {
+	return &PostActorHandler{actorService: actorService}
 }
 
 func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
