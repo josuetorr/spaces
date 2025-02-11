@@ -1,15 +1,23 @@
 package services
 
 import (
-	"fmt"
-	"os"
-
 	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/models"
 )
 
+type CreateActorData struct {
+	Username string
+	Email    string
+	Type     models.ActorType
+}
+
+type ActorRepo interface {
+	Get(id string) (*models.Actor, error)
+	Create(data *models.Actor) error
+}
+
 type ActorService struct {
-	repo data.ActorRepo
+	repo ActorRepo
 }
 
 func NewActorService(repo data.ActorRepo) ActorService {
@@ -17,15 +25,9 @@ func NewActorService(repo data.ActorRepo) ActorService {
 }
 
 func (s ActorService) Create(data CreateActorData) error {
-	domain := os.Getenv("DOMAIN")
-	a := models.Actor{
-		Id:        fmt.Sprintf("%s/%s", domain, data.Username),
-		Type:      models.Person,
-		Inbox:     fmt.Sprintf("%s/inbox", domain),
-		Outbox:    fmt.Sprintf("%s/outbox", domain),
-		Following: fmt.Sprintf("%s/following", domain),
-		Followers: fmt.Sprintf("%s/followers", domain),
-		Liked:     fmt.Sprintf("%s/liked", domain),
+	a := &models.Actor{
+		Id:   data.Username,
+		Type: models.Person,
 	}
 
 	if err := s.repo.Create(a); err != nil {
@@ -34,8 +36,11 @@ func (s ActorService) Create(data CreateActorData) error {
 	return nil
 }
 
-type CreateActorData struct {
-	Username string
-	Email    string
-	Type     models.ActorType
+func (s ActorService) Get(id string) (*models.Actor, error) {
+	a, err := s.repo.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return a, nil
 }

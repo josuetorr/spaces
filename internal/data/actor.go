@@ -42,7 +42,7 @@ func (r ActorRepo) Get(id string) (*models.Actor, error) {
 	return &actor, nil
 }
 
-func (r ActorRepo) Create(a models.Actor) error {
+func (r ActorRepo) Create(a *models.Actor) error {
 	stmt, err := r.db.Prepare(insertActorQuery)
 	if err != nil {
 		return err

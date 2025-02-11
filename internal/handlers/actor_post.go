@@ -5,11 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 
+	"gitlab.com/josuetorr/spaces/internal/models"
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
 type ActorService interface {
 	Create(a services.CreateActorData) error
+	Get(id string) (*models.Actor, error)
 }
 
 type PostActorHandler struct {
@@ -27,6 +29,12 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Invalid json", http.StatusBadRequest)
+		return
+	}
+
+	a, _ := h.actorService.Get(data.Username)
+	if a != nil {
+		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
 		return
 	}
 
