@@ -31,7 +31,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler().ServeHTTP)
+	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler(log, actorService).ServeHTTP)
 
 	r.Post("/users/", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
 	r.Get("/users/{username}", handlers.NewGetActorHandler().ServeHTTP)
