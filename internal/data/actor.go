@@ -8,7 +8,7 @@ import (
 
 const (
 	getActorQuery    = "SELECT * FROM actors WHERE id=?;"
-	insertActorQuery = "INSERT INTO actors(id, type, preferredUsername) VALUES(?,?,?)"
+	insertActorQuery = "INSERT INTO actors(id, type, email, preferredUsername) VALUES(?,?,?,?)"
 )
 
 type ActorRepo struct {
@@ -31,6 +31,7 @@ func (r ActorRepo) Get(id string) (*models.Actor, error) {
 	if err := result.Scan(
 		&actor.Id,
 		&actor.Type,
+		&actor.Email,
 		&actor.PreferredUsername); err != nil {
 		return nil, err
 	}

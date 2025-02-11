@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/models"
 )
@@ -9,6 +11,19 @@ type CreateActorData struct {
 	Username string
 	Email    string
 	Type     models.ActorType
+}
+
+func (data CreateActorData) Validate() error {
+	if data.Username == "" {
+		return fmt.Errorf("Must provided username")
+	}
+	if data.Type == "" {
+		return fmt.Errorf("Must provided actor type")
+	}
+	if data.Email == "" {
+		return fmt.Errorf("Must provided email")
+	}
+	return nil
 }
 
 type ActorRepo interface {
@@ -27,7 +42,7 @@ func NewActorService(repo data.ActorRepo) ActorService {
 func (s ActorService) Create(data CreateActorData) error {
 	a := &models.Actor{
 		Id:   data.Username,
-		Type: models.Person,
+		Type: data.Type,
 	}
 
 	if err := s.repo.Create(a); err != nil {

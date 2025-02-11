@@ -14,4 +14,5 @@ type Actor struct {
 	Id                string    `json:"id"`
 	Type              ActorType `json:"type"`
 	PreferredUsername string    `json:"preferredUsername"`
+	Email             string    `json:"email"`
 }

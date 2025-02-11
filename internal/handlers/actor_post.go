@@ -32,6 +32,11 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := data.Validate(); err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
 	a, _ := h.actorService.Get(data.Username)
 	if a != nil {
 		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
