@@ -46,7 +46,7 @@ func (r ActorRepo) Create(a *models.Actor) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(a.Id, a.Type, a.PreferredUsername)
+	_, err = stmt.Exec(a.Id, a.Type, a.Email, a.PreferredUsername)
 
 	return err
 }
