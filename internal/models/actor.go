@@ -33,19 +33,19 @@ type ActorDto struct {
 }
 
 func (a Actor) ToDto() ActorDto {
-	enpoint := fmt.Sprintf("https://%s/%s", os.Getenv("SERVER_NAME"), a.Id)
+	id := fmt.Sprintf("https://%s/%s", os.Getenv("SERVER_NAME"), a.Id)
 	return ActorDto{
 		Context: "https://www.w3.org/ns/activitystreams",
 		Actor: Actor{
-			Id:                a.Id,
+			Id:                id,
 			Email:             a.Email,
 			PreferredUsername: a.PreferredUsername,
 			Type:              a.Type,
 		},
-		Inbox:     enpoint + "/inbox",
-		Outbox:    enpoint + "/outbox",
-		Following: enpoint + "/following",
-		Followers: enpoint + "/followers",
-		Liked:     enpoint + "/liked",
+		Inbox:     id + "/inbox",
+		Outbox:    id + "/outbox",
+		Following: id + "/following",
+		Followers: id + "/followers",
+		Liked:     id + "/liked",
 	}
 }
