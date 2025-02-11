@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	_ "github.com/joho/godotenv/autoload"
 	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/handlers"
 	"gitlab.com/josuetorr/spaces/internal/services"
@@ -32,8 +33,8 @@ func main() {
 
 	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler().ServeHTTP)
 
+	r.Post("/users/", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
 	r.Get("/users/{username}", handlers.NewGetActorHandler().ServeHTTP)
-	r.Post("/users/{username}", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
 
 	r.Get("/users/{username}/inbox", handlers.NewGetInboxHandler().ServeHTTP)
 	r.Post("/users/{username}/inbox", handlers.NewPostInboxHandler(log).ServeHTTP)

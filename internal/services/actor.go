@@ -17,7 +17,7 @@ func NewActorService(repo data.ActorRepo) ActorService {
 }
 
 func (s ActorService) Create(data CreateActorData) error {
-	domain := os.Getenv("domain")
+	domain := os.Getenv("DOMAIN")
 	a := models.Actor{
 		Id:        fmt.Sprintf("%s/%s", domain, data.Username),
 		Type:      models.Person,
