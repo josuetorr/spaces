@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"os"
+	"reflect"
+	"strings"
 )
 
 type ActorType string
@@ -16,10 +18,12 @@ const (
 )
 
 type Actor struct {
-	Id                string    `json:"id"`
-	Type              ActorType `json:"type"`
-	PreferredUsername string    `json:"preferredUsername"`
-	Email             string    `json:"email"`
+	Uid               string    `json:"uid,omitempty"`
+	Id                string    `json:"id,omitempty"`
+	Type              ActorType `json:"type,omitempty"`
+	PreferredUsername string    `json:"preferredUsername,omitempty"`
+	Email             string    `json:"email,omitempty"`
+	Follows           []Actor   `json:"follows,omitempty"`
 }
 
 type ActorDto struct {
@@ -48,4 +52,24 @@ func (a Actor) ToDto() ActorDto {
 		Followers: id + "/followers",
 		Liked:     id + "/liked",
 	}
+}
+
+func (a Actor) NQuads() []byte {
+	format := "_:%s <%s> \"%s\" .\n"
+	nquads := fmt.Sprintf(format, a.Id, "dgraph.type", "Actor")
+
+	t := reflect.TypeOf(a)
+	v := reflect.ValueOf(a)
+	for i := 0; i < t.NumField(); i++ {
+		field := strings.ToLower(t.Field(i).Name)
+		fieldValue := v.Field(i)
+
+		if field == "uid" || fieldValue.IsZero() {
+			continue
+		}
+
+		nquads = nquads + fmt.Sprintf(format, a.Id, field, fieldValue)
+	}
+
+	return []byte(nquads)
 }

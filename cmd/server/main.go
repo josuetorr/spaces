@@ -20,12 +20,10 @@ import (
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
-	db, err := data.Init()
-	if err != nil {
-		panic(err)
-	}
+	db, cancel := data.Init()
+	defer cancel()
 
-	actorRepo := data.NewActorRepo(db)
+	actorRepo := data.NewActorRepo(db, log)
 	actorService := services.NewActorService(actorRepo)
 
 	r := chi.NewRouter()
@@ -33,6 +31,8 @@ func main() {
 
 	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler(log, actorService).ServeHTTP)
 
+	// TODO: setup proper routing
+	// TODO: change "username" -> "id"
 	r.Post("/users/", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
 	r.Get("/users/{username}", handlers.NewGetActorHandler(actorService).ServeHTTP)
 

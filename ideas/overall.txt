@@ -1,0 +1,29 @@
+Since we have a graph, we need to think in terms of mutation and queries. When we post to a user's inbox, what are we doing in terms of the graph? First of all, is it a node? I want to say yes.
+An actor(node) HAS(edge) an inbox/outbox(node). A i/o (inbox/outbox) has pending activities(node)
+
+for now, this is what we have:
+  Nodes: - Actor
+         - Inbox
+         - Outbox
+
+  Edges: - Activities, e.g alice FOLLOWS bob
+                       e.g alice REPLIED_TO a post
+         - Possesions, e.g alice HAS an inbox
+
+How would our schema look like:
+Schema
+Type Actor {
+  uid
+  id
+  firstname
+  lastname
+  preferredUsername
+  email
+  dob
+}
+
+id: string @index(hash) .
+firstname: string @index(exact, term) .
+lastname: string @index(exact, term) .
+preferredUsername: string @index(exact, term) .
+email: string @index(exact, term) .

@@ -5,14 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"gitlab.com/josuetorr/spaces/internal/models"
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
-
-type ActorService interface {
-	Create(a services.CreateActorData) error
-	Get(id string) (*models.Actor, error)
-}
 
 type PostActorHandler struct {
 	log          *slog.Logger
@@ -37,7 +31,13 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, _ := h.actorService.Get(data.Username)
+	a, _ := h.actorService.Get("id", data.Username)
+	if a != nil {
+		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
+		return
+	}
+
+	a, _ = h.actorService.Get("email", data.Email)
 	if a != nil {
 		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
 		return

@@ -1,52 +1,78 @@
 package data
 
 import (
-	"database/sql"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log/slog"
+	// "strings"
 
+	"github.com/dgraph-io/dgo/v240"
+	"github.com/dgraph-io/dgo/v240/protos/api"
 	"gitlab.com/josuetorr/spaces/internal/models"
 )
 
 const (
-	getActorQuery    = "SELECT * FROM actors WHERE id=?;"
-	insertActorQuery = "INSERT INTO actors(id, type, email, preferredUsername) VALUES(?,?,?,?)"
+	getActorByIdQuery = `
+  query{
+      q(func: type(Actor)) @filter(eq(%s, %s)){
+        id
+        preferredUsername
+      }
+    }
+  `
+	insertActorQuery = ""
 )
 
 type ActorRepo struct {
-	db *sql.DB
+	dg  *dgo.Dgraph
+	log *slog.Logger
 }
 
-func NewActorRepo(db *sql.DB) ActorRepo {
-	return ActorRepo{db: db}
+func NewActorRepo(dg *dgo.Dgraph, log *slog.Logger) ActorRepo {
+	return ActorRepo{dg: dg, log: log}
 }
 
-func (r ActorRepo) Get(id string) (*models.Actor, error) {
-	stmt, err := r.db.Prepare(getActorQuery)
+func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
+	allowedFields := map[string]bool{
+		"id":    true,
+		"email": true,
+	}
+
+	if !allowedFields[by] {
+		return nil, errors.New("Invalid query")
+	}
+
+	txn := r.dg.NewTxn()
+	res, err := txn.Query(context.Background(), fmt.Sprintf(getActorByIdQuery, by, value))
 	if err != nil {
 		return nil, err
 	}
-	defer stmt.Close()
 
-	var actor models.Actor
-	result := stmt.QueryRow(id)
-	if err := result.Scan(
-		&actor.Id,
-		&actor.Type,
-		&actor.Email,
-		&actor.PreferredUsername); err != nil {
+	type Root struct {
+		Q []models.Actor `json:"q"`
+	}
+	var root Root
+	if err := json.Unmarshal(res.Json, &root); err != nil {
 		return nil, err
 	}
 
-	return &actor, nil
+	if len(root.Q) == 0 {
+		return nil, nil
+	}
+
+	return &root.Q[0], nil
 }
 
 func (r ActorRepo) Create(a *models.Actor) error {
-	stmt, err := r.db.Prepare(insertActorQuery)
+	nquads := a.NQuads()
+	mut := &api.Mutation{CommitNow: true, SetNquads: nquads}
+	_, err := r.dg.NewTxn().Mutate(context.Background(), mut)
 	if err != nil {
+		r.log.Error(err.Error())
 		return err
 	}
-	defer stmt.Close()
 
-	_, err = stmt.Exec(a.Id, a.Type, a.Email, a.PreferredUsername)
-
-	return err
+	return nil
 }

@@ -1,0 +1,22 @@
+When a request comes in, we need to route it to the correct handler. Let's start with creating a user.
+
+req -> create user handler... passes data -> create user service... converts raw data into dgraph entities -> dgraph
+
+handler(req){
+  data = extract_data(req)
+  success, err = actorService.create_user(data)
+  if err {
+    return http error
+  }
+
+  return success
+}
+
+actorService.create_user(data){
+  mut = convert_data_to_mut(data)
+  dataLayer.treat_mutation(mut)
+}
+
+dataLayer.treat_mutation(mut){
+  dgraph(mut)
+}

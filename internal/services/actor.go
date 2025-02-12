@@ -29,7 +29,7 @@ func (data CreateActorData) Validate() error {
 }
 
 type ActorRepo interface {
-	Get(id string) (*models.Actor, error)
+	Get(by string, value string) (*models.Actor, error)
 	Create(data *models.Actor) error
 }
 
@@ -58,11 +58,6 @@ func (s ActorService) Create(data CreateActorData) error {
 	return nil
 }
 
-func (s ActorService) Get(id string) (*models.Actor, error) {
-	a, err := s.repo.Get(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return a, nil
+func (s ActorService) Get(by string, value string) (*models.Actor, error) {
+	return s.repo.Get(by, value)
 }

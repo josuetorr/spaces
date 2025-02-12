@@ -1,0 +1,19 @@
+type Actor {
+  id
+  type
+  firstname
+  lastname
+  preferredUsername
+  email
+  dob
+  follows 
+}
+
+id: string @index(hash) .
+firstname: string @index(exact, term) .
+lastname: string @index(exact, term) .
+preferredUsername: string @index(exact, term) .
+email: string @index(exact, term) .
+dob: datetime .
+follows: [uid] .
+type: string @index(exact) .
