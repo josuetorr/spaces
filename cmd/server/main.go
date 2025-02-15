@@ -10,37 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"gitlab.com/josuetorr/spaces/internal/data"
-	"gitlab.com/josuetorr/spaces/internal/handlers"
-	"gitlab.com/josuetorr/spaces/internal/services"
+	"gitlab.com/josuetorr/spaces/internal/routes"
 )
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
-	db, cancel := data.Init()
+	dg, cancel := data.Init()
 	defer cancel()
 
-	actorRepo := data.NewActorRepo(db, log)
-	actorService := services.NewActorService(actorRepo)
-
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-
-	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler(log, actorService).ServeHTTP)
-
-	// TODO: setup proper routing
-	// TODO: change "username" -> "id"
-	r.Post("/users/", handlers.NewPostActorHandler(log, actorService).ServeHTTP)
-	r.Get("/users/{username}", handlers.NewGetActorHandler(actorService).ServeHTTP)
-
-	r.Get("/users/{username}/inbox", handlers.NewGetInboxHandler().ServeHTTP)
-	r.Post("/users/{username}/inbox", handlers.NewPostInboxHandler(log).ServeHTTP)
-
-	r.Get("/users/{username}/outbox", handlers.NewGetOutboxHandler().ServeHTTP)
-	r.Post("/users/{username}/outbox", handlers.NewPostOutboxHandler().ServeHTTP)
+	r := routes.SetupRoutes(dg, log)
 
 	port := "3000"
 
