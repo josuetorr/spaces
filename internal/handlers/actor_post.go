@@ -13,7 +13,7 @@ type PostActorHandler struct {
 	actorService ActorService
 }
 
-func NewPostActorHandler(log *slog.Logger, actorService services.ActorService) *PostActorHandler {
+func NewPostActorHandler(log *slog.Logger, actorService ActorService) *PostActorHandler {
 	return &PostActorHandler{log: log, actorService: actorService}
 }
 
