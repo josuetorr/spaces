@@ -77,17 +77,6 @@ func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
 	return &root.Q[0], nil
 }
 
-// {
-//   "@context": "https://www.w3.org/ns/activitystreams",
-//   "id": "https://example.com/user/alice/following",
-//   "type": "OrderedCollection",
-//   "totalItems": 2,
-//   "first": {
-//     "id": "https://example.com/user/alice/following?page=1",
-//     "type": "OrderedCollectionPage"
-//   }
-// }
-
 func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
 	vars := make(map[string]string)
 	vars["$id"] = id

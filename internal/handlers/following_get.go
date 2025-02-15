@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 
@@ -41,7 +41,7 @@ func (h *GetFollowingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("following: %v, err: %v\n", following, err)
 
+	json.NewEncoder(w).Encode(following)
 	w.Header().Set("Content-Type", ActivityPubContentType)
 }
