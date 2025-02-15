@@ -30,7 +30,6 @@ type Actor struct {
 
 func (a Actor) ToDto() *ap.Actor {
 	id := fmt.Sprintf("https://%s/%s", os.Getenv("SPACES_SERVER_NAME"), a.Id)
-	fmt.Printf("hello? %v\n", a)
 	apActor := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(a.Type))
 	apActor.Inbox = ap.IRI(id + "/inbox")
 	apActor.Outbox = ap.IRI(id + "/outbox")
