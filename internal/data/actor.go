@@ -25,7 +25,15 @@ const (
       }
     }
   `
-	insertActorQuery = ""
+	getActorFollowingByIdQuery = `
+  query following($id: string){
+    q(func: eq(id, $id)){
+      follows {
+        id
+      }
+    }
+  }
+  `
 )
 
 type ActorRepo struct {
@@ -67,6 +75,42 @@ func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
 	}
 
 	return &root.Q[0], nil
+}
+
+// {
+//   "@context": "https://www.w3.org/ns/activitystreams",
+//   "id": "https://example.com/user/alice/following",
+//   "type": "OrderedCollection",
+//   "totalItems": 2,
+//   "first": {
+//     "id": "https://example.com/user/alice/following?page=1",
+//     "type": "OrderedCollectionPage"
+//   }
+// }
+
+func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
+	vars := make(map[string]string)
+	vars["$id"] = id
+
+	txn := r.dg.NewTxn()
+	res, err := txn.QueryWithVars(context.Background(), getActorFollowingByIdQuery, vars)
+	if err != nil {
+		return nil, err
+	}
+
+	type Root struct {
+		Q []models.Actor `json:"q"`
+	}
+	var root Root
+	if err := json.Unmarshal(res.Json, &root); err != nil {
+		return nil, err
+	}
+
+	if len(root.Q) == 0 {
+		return nil, err
+	}
+
+	return root.Q[0].Follows, nil
 }
 
 func (r ActorRepo) Create(a *models.Actor) error {

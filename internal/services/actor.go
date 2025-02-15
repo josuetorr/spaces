@@ -33,6 +33,7 @@ func (data CreateActorData) Validate() error {
 type ActorRepo interface {
 	Get(by string, value string) (*models.Actor, error)
 	Create(data *models.Actor) error
+	GetFollowing(id string) ([]models.Actor, error)
 }
 
 type ActorService struct {
@@ -65,4 +66,8 @@ func (s ActorService) Create(data CreateActorData) error {
 
 func (s ActorService) Get(by string, value string) (*models.Actor, error) {
 	return s.repo.Get(by, value)
+}
+
+func (s ActorService) GetFollowing(id string) ([]models.Actor, error) {
+	return s.repo.GetFollowing(id)
 }
