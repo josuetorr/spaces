@@ -56,7 +56,6 @@ func (a Actor) NQuads() []byte {
 
 		nquads = nquads + fmt.Sprintf(format, a.Id, field, fieldValue)
 	}
-	fmt.Println(nquads)
 
 	return []byte(nquads)
 }
