@@ -9,20 +9,22 @@ import (
 	ap "github.com/go-ap/activitypub"
 )
 
-type ActorType string
+type ActorType = ap.ActivityVocabularyType
 
 const (
-	Application  ActorType = "Application"
-	Group        ActorType = "Group"
-	Orginization ActorType = "Orginization"
-	Person       ActorType = "Person"
-	Service      ActorType = "Service"
+	Application  ActorType = ap.ApplicationType
+	Group        ActorType = ap.GroupType
+	Organization ActorType = ap.OrganizationType
+	Person       ActorType = ap.PersonType
+	Service      ActorType = ap.ServiceType
 )
 
 type Actor struct {
 	Uid               string    `json:"uid,omitempty"`
 	Id                string    `json:"id,omitempty"`
 	Type              ActorType `json:"type,omitempty"`
+	Firstname         string    `json:"firstname, omitempty"`
+	Lastname          string    `json:"lastname, omitempty"`
 	PreferredUsername string    `json:"preferredUsername,omitempty"`
 	Email             string    `json:"email,omitempty"`
 	Follows           []Actor   `json:"follows,omitempty"`
@@ -54,6 +56,7 @@ func (a Actor) NQuads() []byte {
 
 		nquads = nquads + fmt.Sprintf(format, a.Id, field, fieldValue)
 	}
+	fmt.Println(nquads)
 
 	return []byte(nquads)
 }

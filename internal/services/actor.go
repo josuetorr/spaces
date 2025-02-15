@@ -8,10 +8,12 @@ import (
 )
 
 type CreateActorData struct {
+	Type              models.ActorType
+	Firstname         string
+	Lastname          string
 	Username          string
 	PreferredUsername string
 	Email             string
-	Type              models.ActorType
 }
 
 func (data CreateActorData) Validate() error {
@@ -43,9 +45,12 @@ func NewActorService(repo data.ActorRepo) ActorService {
 
 func (s ActorService) Create(data CreateActorData) error {
 	a := &models.Actor{
-		Id:    data.Username,
-		Type:  data.Type,
-		Email: data.Email,
+		Id:                data.Username,
+		Type:              data.Type,
+		Firstname:         data.Firstname,
+		Lastname:          data.Lastname,
+		PreferredUsername: data.PreferredUsername,
+		Email:             data.Email,
 	}
 
 	if data.PreferredUsername == "" {
