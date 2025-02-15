@@ -9,3 +9,5 @@ type ActorService interface {
 	Create(a services.CreateActorData) error
 	Get(by string, value string) (*models.Actor, error)
 }
+
+const ActivityPubContentType = `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`

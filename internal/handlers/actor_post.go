@@ -49,6 +49,6 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`)
+	w.Header().Set("Content-Type", ActivityPubContentType)
 	w.WriteHeader(http.StatusCreated)
 }

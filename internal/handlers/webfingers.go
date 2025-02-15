@@ -49,13 +49,13 @@ func (h *WebFingerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Links: []ap.Link{
 			{
 				Rel:  "self",
-				Type: "application/activity+json",
+				Type: ActivityPubContentType,
 				Href: ap.IRI(fmt.Sprintf("https://%s/users/%s", domain, username)),
 			},
 		},
 	}
 
-	w.Header().Set("Content-Type", "application/activity+json")
+	w.Header().Set("Content-Type", ActivityPubContentType)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal error", http.StatusInternalServerError)
