@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	// "strings"
 
 	"github.com/dgraph-io/dgo/v240"
 	"github.com/dgraph-io/dgo/v240/protos/api"
@@ -18,7 +17,11 @@ const (
   query{
       q(func: type(Actor)) @filter(eq(%s, %s)){
         id
+        type
+        firstname
+        lastname
         preferredUsername
+        email 
       }
     }
   `
@@ -45,6 +48,7 @@ func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
 	}
 
 	txn := r.dg.NewTxn()
+	// TODO: pass ctx
 	res, err := txn.Query(context.Background(), fmt.Sprintf(getActorByIdQuery, by, value))
 	if err != nil {
 		return nil, err
