@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	ap "github.com/go-ap/activitypub"
 )
 
 type WebFingerHandler struct {
@@ -44,11 +46,11 @@ func (h *WebFingerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	resp := WebFingerResponse{
 		Subject: query,
-		Links: []Link{
+		Links: []ap.Link{
 			{
 				Rel:  "self",
 				Type: "application/activity+json",
-				Href: fmt.Sprintf("https://%s/%s", domain, username),
+				Href: ap.IRI(fmt.Sprintf("https://%s/%s", domain, username)),
 			},
 		},
 	}
@@ -62,12 +64,6 @@ func (h *WebFingerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type WebFingerResponse struct {
-	Subject string `json:"subject"`
-	Links   []Link `json:"links"`
-}
-
-type Link struct {
-	Rel  string `json:"rel"`
-	Type string `json:"type"`
-	Href string `json:"href"`
+	Subject string    `json:"subject"`
+	Links   []ap.Link `json:"links"`
 }
