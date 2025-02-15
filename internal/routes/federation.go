@@ -21,7 +21,5 @@ func NewFederationRoutes(actorService handlers.ActorService, log *slog.Logger) c
 	r.Get("/following", handlers.NewGetFollowingHandler().ServeHTTP)
 	r.Get("/followers", handlers.NewGetFollowersHandler().ServeHTTP)
 
-	// TODO: add following and followers
-
 	return r
 }
