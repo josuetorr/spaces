@@ -50,7 +50,7 @@ func (h *WebFingerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			{
 				Rel:  "self",
 				Type: "application/activity+json",
-				Href: ap.IRI(fmt.Sprintf("https://%s/%s", domain, username)),
+				Href: ap.IRI(fmt.Sprintf("https://%s/users/%s", domain, username)),
 			},
 		},
 	}
