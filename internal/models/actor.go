@@ -30,13 +30,15 @@ type Actor struct {
 	Follows           []Actor   `json:"follows,omitempty"`
 }
 
-func (a Actor) ToDto() *ap.Actor {
+func (a Actor) JSON() *ap.Actor {
 	id := fmt.Sprintf("https://%s/%s", os.Getenv("SPACES_SERVER_NAME"), a.Id)
+
 	apActor := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(a.Type))
 	apActor.Inbox = ap.IRI(id + "/inbox")
 	apActor.Outbox = ap.IRI(id + "/outbox")
 	apActor.Following = ap.IRI(id + "/following")
 	apActor.Followers = ap.IRI(id + "/followers")
+
 	return apActor
 }
 

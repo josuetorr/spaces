@@ -34,5 +34,5 @@ func (h *GetActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`)
-	json.NewEncoder(w).Encode(a.ToDto())
+	json.NewEncoder(w).Encode(a.JSON())
 }
