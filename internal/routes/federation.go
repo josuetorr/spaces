@@ -18,7 +18,7 @@ func NewFederationRoutes(actorService handlers.ActorService, log *slog.Logger) c
 	r.Get("/outbox", handlers.NewGetOutboxHandler().ServeHTTP)
 	r.Post("/outbox", handlers.NewPostOutboxHandler().ServeHTTP)
 
-	r.Get("/following", handlers.NewGetFollowingHandler().ServeHTTP)
+	r.Get("/following", handlers.NewGetFollowingHandler(log, actorService).ServeHTTP)
 	r.Get("/followers", handlers.NewGetFollowersHandler().ServeHTTP)
 
 	return r

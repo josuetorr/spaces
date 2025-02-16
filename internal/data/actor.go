@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	// "strings"
 
 	"github.com/dgraph-io/dgo/v240"
 	"github.com/dgraph-io/dgo/v240/protos/api"
@@ -18,11 +17,23 @@ const (
   query{
       q(func: type(Actor)) @filter(eq(%s, %s)){
         id
+        type
+        firstname
+        lastname
         preferredUsername
+        email 
       }
     }
   `
-	insertActorQuery = ""
+	getActorFollowingByIdQuery = `
+  query following($id: string){
+    q(func: eq(id, $id)){
+      follows {
+        id
+      }
+    }
+  }
+  `
 )
 
 type ActorRepo struct {
@@ -45,6 +56,7 @@ func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
 	}
 
 	txn := r.dg.NewTxn()
+	// TODO: pass ctx
 	res, err := txn.Query(context.Background(), fmt.Sprintf(getActorByIdQuery, by, value))
 	if err != nil {
 		return nil, err
@@ -63,6 +75,31 @@ func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
 	}
 
 	return &root.Q[0], nil
+}
+
+func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
+	vars := make(map[string]string)
+	vars["$id"] = id
+
+	txn := r.dg.NewTxn()
+	res, err := txn.QueryWithVars(context.Background(), getActorFollowingByIdQuery, vars)
+	if err != nil {
+		return nil, err
+	}
+
+	type Root struct {
+		Q []models.Actor `json:"q"`
+	}
+	var root Root
+	if err := json.Unmarshal(res.Json, &root); err != nil {
+		return nil, err
+	}
+
+	if len(root.Q) == 0 {
+		return nil, err
+	}
+
+	return root.Q[0].Follows, nil
 }
 
 func (r ActorRepo) Create(a *models.Actor) error {

@@ -5,53 +5,41 @@ import (
 	"os"
 	"reflect"
 	"strings"
+
+	ap "github.com/go-ap/activitypub"
 )
 
-type ActorType string
+type ActorType = ap.ActivityVocabularyType
 
 const (
-	Application  ActorType = "Application"
-	Group        ActorType = "Group"
-	Orginization ActorType = "Orginization"
-	Person       ActorType = "Person"
-	Service      ActorType = "Service"
+	Application  ActorType = ap.ApplicationType
+	Group        ActorType = ap.GroupType
+	Organization ActorType = ap.OrganizationType
+	Person       ActorType = ap.PersonType
+	Service      ActorType = ap.ServiceType
 )
 
 type Actor struct {
 	Uid               string    `json:"uid,omitempty"`
 	Id                string    `json:"id,omitempty"`
 	Type              ActorType `json:"type,omitempty"`
+	Firstname         string    `json:"firstname, omitempty"`
+	Lastname          string    `json:"lastname, omitempty"`
 	PreferredUsername string    `json:"preferredUsername,omitempty"`
 	Email             string    `json:"email,omitempty"`
 	Follows           []Actor   `json:"follows,omitempty"`
 }
 
-type ActorDto struct {
-	Actor
-	Context   string `json:"@context"`
-	Inbox     string `json:"inbox"`
-	Outbox    string `json:"outbox"`
-	Following string `json:"following"`
-	Followers string `json:"followers"`
-	Liked     string `json:"liked"`
-}
+func (a Actor) JSON() *ap.Actor {
+	id := fmt.Sprintf("https://%s/%s", os.Getenv("SPACES_SERVER_NAME"), a.Id)
 
-func (a Actor) ToDto() ActorDto {
-	id := fmt.Sprintf("https://%s/%s", os.Getenv("SERVER_NAME"), a.Id)
-	return ActorDto{
-		Context: "https://www.w3.org/ns/activitystreams",
-		Actor: Actor{
-			Id:                id,
-			Email:             a.Email,
-			PreferredUsername: a.PreferredUsername,
-			Type:              a.Type,
-		},
-		Inbox:     id + "/inbox",
-		Outbox:    id + "/outbox",
-		Following: id + "/following",
-		Followers: id + "/followers",
-		Liked:     id + "/liked",
-	}
+	apActor := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(a.Type))
+	apActor.Inbox = ap.IRI(id + "/inbox")
+	apActor.Outbox = ap.IRI(id + "/outbox")
+	apActor.Following = ap.IRI(id + "/following")
+	apActor.Followers = ap.IRI(id + "/followers")
+
+	return apActor
 }
 
 func (a Actor) NQuads() []byte {
