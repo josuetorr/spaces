@@ -2,12 +2,10 @@ package models
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"strings"
 
 	ap "github.com/go-ap/activitypub"
-	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 type ActorType = ap.ActivityVocabularyType

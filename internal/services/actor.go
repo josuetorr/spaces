@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"os"
 
 	ap "github.com/go-ap/activitypub"
 	"gitlab.com/josuetorr/spaces/internal/models"
@@ -70,6 +69,7 @@ func (s ActorService) Create(data CreateActorData) error {
 }
 
 func (s ActorService) GetById(id string) (*models.Actor, error) {
+	id = utils.GetFullId("users", id)
 	return s.repo.GetById(id)
 }
 
