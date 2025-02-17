@@ -8,11 +8,11 @@ import (
 )
 
 type ActorRepo struct {
-	db  *kivik.Client
+	db  *kivik.DB
 	log *slog.Logger
 }
 
-func NewActorRepo(db *kivik.Client, log *slog.Logger) ActorRepo {
+func NewActorRepo(db *kivik.DB, log *slog.Logger) ActorRepo {
 	return ActorRepo{db: db, log: log}
 }
 

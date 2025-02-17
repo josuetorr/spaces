@@ -17,7 +17,7 @@ import (
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
-	db, cancel := data.Init()
+	db, cancel := data.Init("spaces")
 	defer cancel()
 
 	r := routes.SetupRoutes(db, log)

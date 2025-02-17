@@ -11,7 +11,7 @@ import (
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
-func SetupRoutes(db *kivik.Client, log *slog.Logger) chi.Router {
+func SetupRoutes(db *kivik.DB, log *slog.Logger) chi.Router {
 	actorRepo := data.NewActorRepo(db, log)
 	actorService := services.NewActorService(actorRepo)
 
