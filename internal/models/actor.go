@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	ap "github.com/go-ap/activitypub"
+	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 type ActorType = ap.ActivityVocabularyType
@@ -31,13 +32,11 @@ type Actor struct {
 }
 
 func (a Actor) JSON() *ap.Actor {
-	id := fmt.Sprintf("https://%s/%s", os.Getenv("SPACES_SERVER_NAME"), a.Id)
-
-	apActor := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(a.Type))
-	apActor.Inbox = ap.IRI(id + "/inbox")
-	apActor.Outbox = ap.IRI(id + "/outbox")
-	apActor.Following = ap.IRI(id + "/following")
-	apActor.Followers = ap.IRI(id + "/followers")
+	apActor := ap.ActorNew(ap.ID(a.Id), ap.ActivityVocabularyType(a.Type))
+	apActor.Inbox = ap.IRI(a.Id + "/inbox")
+	apActor.Outbox = ap.IRI(a.Id + "/outbox")
+	apActor.Following = ap.IRI(a.Id + "/following")
+	apActor.Followers = ap.IRI(a.Id + "/followers")
 
 	return apActor
 }

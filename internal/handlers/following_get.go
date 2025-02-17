@@ -20,7 +20,7 @@ func NewGetFollowingHandler(log *slog.Logger, actorService ActorService) *GetFol
 func (h *GetFollowingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	a, err := h.actorService.Get("id", username)
+	a, err := h.actorService.GetById(username)
 	if err != nil {
 		if err.Error() == "Invalid query" {
 			http.Error(w, err.Error(), http.StatusBadRequest)

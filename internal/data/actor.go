@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/go-kivik/kivik/v4"
@@ -17,13 +18,31 @@ func NewActorRepo(db *kivik.DB, log *slog.Logger) ActorRepo {
 }
 
 func (r ActorRepo) Create(a *models.Actor) error {
-	panic("implement create actor")
+	_, err := r.db.Put(context.TODO(), a.Id, a)
+	if err != nil {
+		r.log.Error(err.Error())
+		return err
+	}
+
+	return nil
 }
 
-func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
-	panic("implement get actor")
+func (r ActorRepo) GetById(id string) (*models.Actor, error) {
+	var a models.Actor
+	if err := r.db.Get(context.TODO(), id).ScanDoc(&a); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
+func (r ActorRepo) GetByEmail(email string) (*models.Actor, error) {
+	var a models.Actor
+	if err := r.db.Query(context.TODO(), "_design/users", "_views/by-email").ScanDoc(&a); err != nil {
+		return nil, err
+	}
+	return &a, nil
 }
 
 func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
-	panic("implement get following")
+	return nil, nil
 }

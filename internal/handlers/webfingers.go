@@ -38,7 +38,7 @@ func (h *WebFingerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, _ := h.actorService.Get("id", username)
+	a, _ := h.actorService.GetById(username)
 	if a == nil {
 		http.Error(w, "Resource not found", http.StatusNotFound)
 		return
