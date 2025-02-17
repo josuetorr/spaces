@@ -17,10 +17,10 @@ import (
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
-	dg, cancel := data.Init()
+	db, cancel := data.Init()
 	defer cancel()
 
-	r := routes.SetupRoutes(dg, log)
+	r := routes.SetupRoutes(db, log)
 
 	port := "3000"
 

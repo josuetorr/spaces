@@ -1,24 +1,23 @@
 package data
 
 import (
+	"fmt"
 	"log"
+	"os"
 
-	"github.com/dgraph-io/dgo/v240"
-	"github.com/dgraph-io/dgo/v240/protos/api"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	kivik "github.com/go-kivik/kivik/v4"
 )
 
-// TODO: login for security
-func Init() (*dgo.Dgraph, func()) {
-	conn, err := grpc.NewClient("localhost:9080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+func Init() (*kivik.Client, func()) {
+	couchdbUrl := fmt.Sprintf("http://localhost:%s", os.Getenv("COUCHDB_PORT"))
+	client, err := kivik.New("couch", couchdbUrl)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Could not init couchDB client: ", err)
 	}
 
-	return dgo.NewDgraphClient(api.NewDgraphClient(conn)), func() {
-		if err := conn.Close(); err != nil {
-			log.Fatal(err)
+	return client, func() {
+		if err := client.Close(); err != nil {
+			log.Fatal("Error closing couchDB client: ", err)
 		}
 	}
 }

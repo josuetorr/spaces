@@ -3,16 +3,16 @@ package routes
 import (
 	"log/slog"
 
-	"github.com/dgraph-io/dgo/v240"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-kivik/kivik/v4"
 	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/handlers"
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
-func SetupRoutes(dg *dgo.Dgraph, log *slog.Logger) chi.Router {
-	actorRepo := data.NewActorRepo(dg, log)
+func SetupRoutes(db *kivik.Client, log *slog.Logger) chi.Router {
+	actorRepo := data.NewActorRepo(db, log)
 	actorService := services.NewActorService(actorRepo)
 
 	r := chi.NewRouter()
