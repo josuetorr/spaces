@@ -38,23 +38,3 @@ func (a Actor) JSON() *ap.Actor {
 
 	return apActor
 }
-
-func (a Actor) NQuads() []byte {
-	format := "_:%s <%s> \"%s\" .\n"
-	nquads := fmt.Sprintf(format, a.Id, "dgraph.type", "Actor")
-
-	t := reflect.TypeOf(a)
-	v := reflect.ValueOf(a)
-	for i := 0; i < t.NumField(); i++ {
-		field := strings.ToLower(t.Field(i).Name)
-		fieldValue := v.Field(i)
-
-		if field == "uid" || fieldValue.IsZero() {
-			continue
-		}
-
-		nquads = nquads + fmt.Sprintf(format, a.Id, field, fieldValue)
-	}
-
-	return []byte(nquads)
-}
