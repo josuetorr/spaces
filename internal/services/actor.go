@@ -34,6 +34,7 @@ func (data CreateActorData) Validate() error {
 type ActorRepo interface {
 	Create(data *models.Actor) error
 
+	Exists(id string) (bool, error)
 	GetById(id string) (*models.Actor, error)
 	GetByEmail(email string) (*models.Actor, error)
 	GetFollowing(id string) ([]models.Actor, error)
@@ -66,6 +67,11 @@ func (s ActorService) Create(data CreateActorData) error {
 		return err
 	}
 	return nil
+}
+
+func (s ActorService) Exists(id string) (bool, error) {
+	id = utils.GetFullId("users", id)
+	return s.repo.Exists(id)
 }
 
 func (s ActorService) GetById(id string) (*models.Actor, error) {

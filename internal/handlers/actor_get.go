@@ -28,11 +28,6 @@ func (h *GetActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if a == nil {
-		http.Error(w, "Resource not found", http.StatusNotFound)
-		return
-	}
-
 	w.Header().Set("Content-Type", ActivityPubContentType)
 	json.NewEncoder(w).Encode(a.JSON())
 }

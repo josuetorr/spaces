@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"github.com/go-kivik/kivik/v4"
@@ -26,6 +25,16 @@ func (r ActorRepo) Create(a *models.Actor) error {
 	}
 
 	return nil
+}
+
+func (r ActorRepo) Exists(id string) (bool, error) {
+	a, err := r.GetById(id)
+
+	if err != nil && err.Error() == "Not Found: missing" {
+		return false, nil
+	}
+
+	return a != nil, err
 }
 
 func (r ActorRepo) GetById(id string) (*models.Actor, error) {
