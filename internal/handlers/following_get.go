@@ -20,7 +20,7 @@ func NewGetFollowingHandler(log *slog.Logger, actorService ActorService) *GetFol
 func (h *GetFollowingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	exists, err := h.actorService.Exists(username)
+	exists, err := h.actorService.ActorExists(username)
 
 	if !exists {
 		http.Error(w, "Resource not found", http.StatusNotFound)
@@ -33,7 +33,7 @@ func (h *GetFollowingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	}
 
-	following, err := h.actorService.GetFollowing(username)
+	following, err := h.actorService.ActorGetFollowing(username)
 	if err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal error", http.StatusInternalServerError)

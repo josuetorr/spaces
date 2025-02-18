@@ -9,13 +9,14 @@ import (
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
-type Actor = services.Actor
+type (
+	Actor     = services.Actor
+	ActorRepo struct {
+		Repository[Actor]
+	}
+)
 
-type ActorRepo struct {
-	Repository[Actor]
-}
-
-func NewActorRepo(db *kivik.DB, log *slog.Logger) ActorRepo {
+func NewActorRepo(log *slog.Logger, db *kivik.DB) ActorRepo {
 	return ActorRepo{Repository[ap.Actor]{db: db, log: log}}
 }
 

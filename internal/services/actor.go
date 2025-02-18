@@ -30,25 +30,23 @@ func (data CreateActorData) Validate() error {
 }
 
 type (
-	Actor      = ap.Actor
-	Collection = ap.Collection
+	Actor           = ap.Actor
+	Collection      = ap.Collection
+	ActorRepository interface {
+		Repository[Actor]
+		GetByEmail(string) (*Actor, error)
+		GetFollowing(string) (ap.IRIs, error)
+	}
+	ActorService struct {
+		repo ActorRepository
+	}
 )
-
-type ActorRepository interface {
-	Repository[Actor]
-	GetByEmail(string) (*Actor, error)
-	GetFollowing(string) (ap.IRIs, error)
-}
-
-type ActorService struct {
-	repo ActorRepository
-}
 
 func NewActorService(repo ActorRepository) ActorService {
 	return ActorService{repo: repo}
 }
 
-func (s ActorService) Create(data CreateActorData) error {
+func (s ActorService) ActorCreate(data CreateActorData) error {
 	id := utils.GetFullId("users", data.Username)
 	a := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(data.Type))
 
@@ -70,21 +68,21 @@ func (s ActorService) Create(data CreateActorData) error {
 	return nil
 }
 
-func (s ActorService) Exists(id string) (bool, error) {
+func (s ActorService) ActorExists(id string) (bool, error) {
 	id = utils.GetFullId("users", id)
 	return s.repo.Exists(id)
 }
 
-func (s ActorService) GetById(id string) (*Actor, error) {
+func (s ActorService) ActorGetById(id string) (*Actor, error) {
 	id = utils.GetFullId("users", id)
 	return s.repo.GetById(id)
 }
 
-func (s ActorService) GetByEmail(email string) (*Actor, error) {
+func (s ActorService) ActorGetByEmail(email string) (*Actor, error) {
 	return s.repo.GetByEmail(email)
 }
 
-func (s ActorService) GetFollowing(id string) (*Collection, error) {
+func (s ActorService) ActorGetFollowing(id string) (*Collection, error) {
 	userId := utils.GetFullId("users", id)
 
 	following, err := s.repo.GetFollowing(id)

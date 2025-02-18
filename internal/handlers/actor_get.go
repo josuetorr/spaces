@@ -18,7 +18,7 @@ func NewGetActorHandler(ActorService ActorService) *GetActorHandler {
 func (h *GetActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	a, err := h.actorService.GetById(username)
+	a, err := h.actorService.ActorGetById(username)
 	if err != nil {
 		if err.Error() == "Not Found: missing" {
 			http.Error(w, err.Error(), http.StatusNotFound)

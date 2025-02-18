@@ -31,19 +31,19 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, _ := h.actorService.GetById(data.Username)
+	a, _ := h.actorService.ActorGetById(data.Username)
 	if a != nil {
 		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
 		return
 	}
 
-	a, _ = h.actorService.GetByEmail(data.Email)
+	a, _ = h.actorService.ActorGetByEmail(data.Email)
 	if a != nil {
 		http.Error(w, "User already exists", http.StatusUnprocessableEntity)
 		return
 	}
 
-	if err := h.actorService.Create(data); err != nil {
+	if err := h.actorService.ActorCreate(data); err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return

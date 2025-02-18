@@ -6,15 +6,22 @@ import (
 
 type (
 	Actor      = services.Actor
+	Activity   = services.Activity
 	Collection = services.Collection
 )
 
 type ActorService interface {
-	Create(a services.CreateActorData) error
-	Exists(id string) (bool, error)
-	GetById(id string) (*Actor, error)
-	GetByEmail(email string) (*Actor, error)
-	GetFollowing(id string) (*Collection, error)
+	ActorCreate(a services.CreateActorData) error
+	ActorExists(id string) (bool, error)
+	ActorGetById(id string) (*Actor, error)
+	ActorGetByEmail(email string) (*Actor, error)
+	ActorGetFollowing(id string) (*Collection, error)
+}
+
+type ActivityService interface {
+	ActivityCreate(a services.CreateActorData) error
+	ActivityExists(id string) (bool, error)
+	ActivityGetById(id string) (*Activity, error)
 }
 
 const ActivityPubContentType = `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`
