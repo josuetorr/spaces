@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"gitlab.com/josuetorr/spaces/internal/services"
+	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 type PostOutboxHandler struct {
@@ -34,13 +38,33 @@ func (h *PostOutboxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdActivity, err := h.activityService.ActivityGetById(docId)
+	createdActivity, err := h.activityService.ActivityGetByDocId(docId)
 	if err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	// client := http.DefaultClient
-	println(createdActivity)
+	instanceName := utils.GetServerURL()
+	url := ""
+	if strings.Contains(data.Object, instanceName) {
+		url = strings.Replace(data.Object, instanceName, fmt.Sprintf("http://localhost:%s", utils.GetServerPort()), 1)
+	}
+
+	activityBytes, err := json.Marshal(createdActivity)
+	if err != nil {
+		h.log.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	client := http.DefaultClient
+	res, err := client.Post(url+"/inbox", ActivityPubContentType, bytes.NewBuffer(activityBytes))
+	if err != nil {
+		h.log.Error(err.Error())
+		http.Error(w, "Unable to contact object's server", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.WriteHeader(res.StatusCode)
 }

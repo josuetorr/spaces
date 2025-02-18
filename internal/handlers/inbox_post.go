@@ -27,7 +27,7 @@ func (h *PostInboxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%+v\n", data)
+	fmt.Printf("hello!: %+v\n", data)
 	// TODO: finish follow flow:
 	// 1. client -> follow req -> follower outbox
 	// 2. follower server -> generated follow req -> followee outbox

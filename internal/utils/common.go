@@ -16,3 +16,7 @@ func GetServerURL() string {
 func GetFullId(objectType string, localId string) string {
 	return fmt.Sprintf("%s/%s/%s", GetServerURL(), objectType, localId)
 }
+
+func GetServerPort() string {
+	return os.Getenv("SPACES_SERVER_PORT")
+}
