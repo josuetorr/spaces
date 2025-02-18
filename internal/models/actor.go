@@ -1,11 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"os"
-	"reflect"
-	"strings"
-
 	ap "github.com/go-ap/activitypub"
 )
 
@@ -31,33 +26,11 @@ type Actor struct {
 }
 
 func (a Actor) JSON() *ap.Actor {
-	id := fmt.Sprintf("https://%s/%s", os.Getenv("SPACES_SERVER_NAME"), a.Id)
-
-	apActor := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(a.Type))
-	apActor.Inbox = ap.IRI(id + "/inbox")
-	apActor.Outbox = ap.IRI(id + "/outbox")
-	apActor.Following = ap.IRI(id + "/following")
-	apActor.Followers = ap.IRI(id + "/followers")
+	apActor := ap.ActorNew(ap.ID(a.Id), ap.ActivityVocabularyType(a.Type))
+	apActor.Inbox = ap.IRI(a.Id + "/inbox")
+	apActor.Outbox = ap.IRI(a.Id + "/outbox")
+	apActor.Following = ap.IRI(a.Id + "/following")
+	apActor.Followers = ap.IRI(a.Id + "/followers")
 
 	return apActor
-}
-
-func (a Actor) NQuads() []byte {
-	format := "_:%s <%s> \"%s\" .\n"
-	nquads := fmt.Sprintf(format, a.Id, "dgraph.type", "Actor")
-
-	t := reflect.TypeOf(a)
-	v := reflect.ValueOf(a)
-	for i := 0; i < t.NumField(); i++ {
-		field := strings.ToLower(t.Field(i).Name)
-		fieldValue := v.Field(i)
-
-		if field == "uid" || fieldValue.IsZero() {
-			continue
-		}
-
-		nquads = nquads + fmt.Sprintf(format, a.Id, field, fieldValue)
-	}
-
-	return []byte(nquads)
 }

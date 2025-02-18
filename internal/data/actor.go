@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/go-kivik/kivik/v4"
@@ -17,13 +18,52 @@ func NewActorRepo(db *kivik.DB, log *slog.Logger) ActorRepo {
 }
 
 func (r ActorRepo) Create(a *models.Actor) error {
-	panic("implement create actor")
+	_, err := r.db.Put(context.TODO(), a.Id, a)
+	if err != nil {
+		r.log.Error(err.Error())
+		return err
+	}
+
+	return nil
 }
 
-func (r ActorRepo) Get(by string, value string) (*models.Actor, error) {
-	panic("implement get actor")
+func (r ActorRepo) Exists(id string) (bool, error) {
+	a, err := r.GetById(id)
+
+	if err != nil && err.Error() == "Not Found: missing" {
+		return false, nil
+	}
+
+	return a != nil, err
+}
+
+func (r ActorRepo) GetById(id string) (*models.Actor, error) {
+	var a models.Actor
+	if err := r.db.Get(context.TODO(), id).ScanDoc(&a); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
+func (r ActorRepo) GetByEmail(email string) (*models.Actor, error) {
+	var a *models.Actor
+	query := map[string]any{
+		"selector": map[string]string{
+			"email": email,
+		},
+		"limit": 1,
+	}
+	rows := r.db.Find(context.TODO(), query)
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.ScanDoc(&a); err != nil {
+			return nil, err
+		}
+	}
+	return a, nil
 }
 
 func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
-	panic("implement get following")
+	return []models.Actor{}, nil
 }

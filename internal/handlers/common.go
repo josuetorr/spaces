@@ -8,7 +8,9 @@ import (
 
 type ActorService interface {
 	Create(a services.CreateActorData) error
-	Get(by string, value string) (*models.Actor, error)
+	Exists(id string) (bool, error)
+	GetById(id string) (*models.Actor, error)
+	GetByEmail(email string) (*models.Actor, error)
 	GetFollowing(id string) (*ap.Collection, error)
 }
 

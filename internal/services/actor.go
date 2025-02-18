@@ -2,11 +2,10 @@ package services
 
 import (
 	"fmt"
-	"os"
 
 	ap "github.com/go-ap/activitypub"
-	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/models"
+	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 type CreateActorData struct {
@@ -33,8 +32,11 @@ func (data CreateActorData) Validate() error {
 }
 
 type ActorRepo interface {
-	Get(by string, value string) (*models.Actor, error)
 	Create(data *models.Actor) error
+
+	Exists(id string) (bool, error)
+	GetById(id string) (*models.Actor, error)
+	GetByEmail(email string) (*models.Actor, error)
 	GetFollowing(id string) ([]models.Actor, error)
 }
 
@@ -42,18 +44,20 @@ type ActorService struct {
 	repo ActorRepo
 }
 
-func NewActorService(repo data.ActorRepo) ActorService {
+func NewActorService(repo ActorRepo) ActorService {
 	return ActorService{repo: repo}
 }
 
 func (s ActorService) Create(data CreateActorData) error {
+	id := utils.GetFullId("users", data.Username)
 	a := &models.Actor{
-		Id:                data.Username,
+		Id:                id,
 		Type:              data.Type,
 		Firstname:         data.Firstname,
 		Lastname:          data.Lastname,
 		PreferredUsername: data.PreferredUsername,
 		Email:             data.Email,
+		Follows:           []models.Actor{},
 	}
 
 	if data.PreferredUsername == "" {
@@ -66,8 +70,18 @@ func (s ActorService) Create(data CreateActorData) error {
 	return nil
 }
 
-func (s ActorService) Get(by string, value string) (*models.Actor, error) {
-	return s.repo.Get(by, value)
+func (s ActorService) Exists(id string) (bool, error) {
+	id = utils.GetFullId("users", id)
+	return s.repo.Exists(id)
+}
+
+func (s ActorService) GetById(id string) (*models.Actor, error) {
+	id = utils.GetFullId("users", id)
+	return s.repo.GetById(id)
+}
+
+func (s ActorService) GetByEmail(email string) (*models.Actor, error) {
+	return s.repo.GetByEmail(email)
 }
 
 // NOTE: for now, the following collection is not ordered not paginated
@@ -89,9 +103,7 @@ func (s ActorService) Get(by string, value string) (*models.Actor, error) {
 //	  ]
 //	}
 func (s ActorService) GetFollowing(id string) (*ap.Collection, error) {
-	// TODO: remove this bullcrap and simply store the ids in full
-	serverName := fmt.Sprintf("https://%s", os.Getenv("SPACES_SERVER_NAME"))
-	userId := fmt.Sprintf("%s/users/%s", serverName, id)
+	userId := utils.GetFullId("users", id)
 
 	following, err := s.repo.GetFollowing(id)
 	followingLen := uint(len(following))
@@ -101,7 +113,7 @@ func (s ActorService) GetFollowing(id string) (*ap.Collection, error) {
 	c.TotalItems = followingLen
 	items := make(ap.ItemCollection, followingLen)
 	for i, f := range following {
-		items[i] = ap.ID(fmt.Sprintf("%s/users/%s", serverName, f.Id))
+		items[i] = ap.ID(f.Id)
 	}
 	c.Items = items
 

@@ -18,18 +18,13 @@ func NewGetActorHandler(ActorService ActorService) *GetActorHandler {
 func (h *GetActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	a, err := h.actorService.Get("id", username)
+	a, err := h.actorService.GetById(username)
 	if err != nil {
-		if err.Error() == "Invalid query" {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if err.Error() == "Not Found: missing" {
+			http.Error(w, err.Error(), http.StatusNotFound)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		return
-	}
-
-	if a == nil {
-		http.Error(w, "Resource not found", http.StatusNotFound)
 		return
 	}
 
