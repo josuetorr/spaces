@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/go-kivik/kivik/v4"
@@ -36,11 +37,22 @@ func (r ActorRepo) GetById(id string) (*models.Actor, error) {
 }
 
 func (r ActorRepo) GetByEmail(email string) (*models.Actor, error) {
-	var a models.Actor
-	if err := r.db.Query(context.TODO(), "_design/users", "_views/by-email").ScanDoc(&a); err != nil {
-		return nil, err
+	var a *models.Actor
+	query := map[string]any{
+		"selector": map[string]string{
+			"email": email,
+		},
+		"limit": 1,
 	}
-	return &a, nil
+	rows := r.db.Find(context.TODO(), query)
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.ScanDoc(&a); err != nil {
+			return nil, err
+		}
+	}
+	return a, nil
 }
 
 func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
