@@ -22,6 +22,7 @@ type ActivityService interface {
 	ActivityCreate(a services.CreateActivityData) (string, error)
 	ActivityExists(id string) (bool, error)
 	ActivityGetById(id string) (*Activity, error)
+	ActivityGetByDocId(id string) (*Activity, error)
 }
 
 const ActivityPubContentType = `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`

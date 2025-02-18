@@ -28,7 +28,8 @@ func NewActivityService(log *slog.Logger, activityRepo ActivityRepository) Activ
 }
 
 func (s ActivityService) ActivityCreate(data CreateActivityData) (string, error) {
-	a := ap.ActivityNew(ap.EmptyID, ap.ActivityVocabularyType(data.Type), ap.ObjectNew(ap.ActorType))
+	a := ap.ActivityNew(ap.EmptyID, ap.ActivityVocabularyType(data.Type), ap.IRI(data.Object))
+	a.Actor = ap.IRI(data.Actor)
 	docId, err := s.repo.Create(a)
 	if err != nil {
 		return docId, err
@@ -44,4 +45,8 @@ func (s ActivityService) ActivityExists(id string) (bool, error) {
 func (s ActivityService) ActivityGetById(id string) (*Activity, error) {
 	id = utils.GetFullId("users", id)
 	return s.repo.GetById(id)
+}
+
+func (s ActivityService) ActivityGetByDocId(id string) (*Activity, error) {
+	return s.repo.GetByDocId(id)
 }
