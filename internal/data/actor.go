@@ -65,5 +65,5 @@ func (r ActorRepo) GetByEmail(email string) (*models.Actor, error) {
 }
 
 func (r ActorRepo) GetFollowing(id string) ([]models.Actor, error) {
-	return nil, nil
+	return []models.Actor{}, nil
 }

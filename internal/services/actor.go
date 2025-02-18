@@ -57,6 +57,7 @@ func (s ActorService) Create(data CreateActorData) error {
 		Lastname:          data.Lastname,
 		PreferredUsername: data.PreferredUsername,
 		Email:             data.Email,
+		Follows:           []models.Actor{},
 	}
 
 	if data.PreferredUsername == "" {
