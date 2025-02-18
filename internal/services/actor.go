@@ -4,14 +4,12 @@ import (
 	"fmt"
 
 	ap "github.com/go-ap/activitypub"
-	"gitlab.com/josuetorr/spaces/internal/models"
 	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 type CreateActorData struct {
-	Type              models.ActorType
-	Firstname         string
-	Lastname          string
+	Type              string
+	Name              string
 	Username          string
 	PreferredUsername string
 	Email             string
@@ -31,38 +29,40 @@ func (data CreateActorData) Validate() error {
 	return nil
 }
 
-type ActorRepo interface {
-	Create(data *models.Actor) error
+type (
+	Actor      = ap.Actor
+	Collection = ap.Collection
+)
 
-	Exists(id string) (bool, error)
-	GetById(id string) (*models.Actor, error)
-	GetByEmail(email string) (*models.Actor, error)
-	GetFollowing(id string) ([]models.Actor, error)
+type ActorRepository interface {
+	Repository[Actor]
+	GetByEmail(string) (*Actor, error)
+	GetFollowing(string) (ap.IRIs, error)
 }
 
 type ActorService struct {
-	repo ActorRepo
+	repo ActorRepository
 }
 
-func NewActorService(repo ActorRepo) ActorService {
+func NewActorService(repo ActorRepository) ActorService {
 	return ActorService{repo: repo}
 }
 
 func (s ActorService) Create(data CreateActorData) error {
 	id := utils.GetFullId("users", data.Username)
-	a := &models.Actor{
-		Id:                id,
-		Type:              data.Type,
-		Firstname:         data.Firstname,
-		Lastname:          data.Lastname,
-		PreferredUsername: data.PreferredUsername,
-		Email:             data.Email,
-		Follows:           []models.Actor{},
+	a := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(data.Type))
+
+	preferredUsername := data.PreferredUsername
+	if preferredUsername == "" {
+		preferredUsername = data.Username
 	}
 
-	if data.PreferredUsername == "" {
-		a.PreferredUsername = data.Username
-	}
+	a.Name = ap.NaturalLanguageValuesNew(ap.LangRefValueNew("en", data.Name))
+	a.PreferredUsername = ap.NaturalLanguageValuesNew(ap.LangRefValueNew("en", preferredUsername))
+	a.Inbox = ap.IRI(id + "/inbox")
+	a.Outbox = ap.IRI(id + "/outbox")
+	a.Following = ap.IRI(id + "/following")
+	a.Followers = ap.IRI(id + "/followers")
 
 	if err := s.repo.Create(a); err != nil {
 		return err
@@ -75,34 +75,16 @@ func (s ActorService) Exists(id string) (bool, error) {
 	return s.repo.Exists(id)
 }
 
-func (s ActorService) GetById(id string) (*models.Actor, error) {
+func (s ActorService) GetById(id string) (*Actor, error) {
 	id = utils.GetFullId("users", id)
 	return s.repo.GetById(id)
 }
 
-func (s ActorService) GetByEmail(email string) (*models.Actor, error) {
+func (s ActorService) GetByEmail(email string) (*Actor, error) {
 	return s.repo.GetByEmail(email)
 }
 
-// NOTE: for now, the following collection is not ordered not paginated
-//
-//	{
-//	  "@context": "https://www.w3.org/ns/activitystreams",
-//	  "summary": "Sally's notes",
-//	  "type": "Collection",
-//	  "totalItems": 2,
-//	  "items": [
-//	    {
-//	      "type": "Note",
-//	      "name": "A Simple Note"
-//	    },
-//	    {
-//	      "type": "Note",
-//	      "name": "Another Simple Note"
-//	    }
-//	  ]
-//	}
-func (s ActorService) GetFollowing(id string) (*ap.Collection, error) {
+func (s ActorService) GetFollowing(id string) (*Collection, error) {
 	userId := utils.GetFullId("users", id)
 
 	following, err := s.repo.GetFollowing(id)
@@ -113,7 +95,7 @@ func (s ActorService) GetFollowing(id string) (*ap.Collection, error) {
 	c.TotalItems = followingLen
 	items := make(ap.ItemCollection, followingLen)
 	for i, f := range following {
-		items[i] = ap.ID(f.Id)
+		items[i] = f.GetID()
 	}
 	c.Items = items
 

@@ -29,5 +29,5 @@ func (h *GetActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", ActivityPubContentType)
-	json.NewEncoder(w).Encode(a.JSON())
+	json.NewEncoder(w).Encode(a)
 }
