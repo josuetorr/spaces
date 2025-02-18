@@ -19,14 +19,14 @@ func NewRepository[T services.Storable](log *slog.Logger, db *kivik.DB) Reposito
 	return Repository[T]{log: log, db: db}
 }
 
-func (r Repository[T]) Create(data *T) error {
-	_, err := r.db.Put(context.TODO(), (*data).GetID().String(), data)
+func (r Repository[T]) Create(data *T) (string, error) {
+	docId, _, err := r.db.CreateDoc(context.TODO(), data)
 	if err != nil {
 		r.log.Error(err.Error())
-		return err
+		return docId, err
 	}
 
-	return nil
+	return docId, nil
 }
 
 func (r Repository[T]) Update(id string, data T) error {
@@ -48,6 +48,25 @@ func (r Repository[T]) Exists(id string) (bool, error) {
 }
 
 func (r Repository[T]) GetById(id string) (*T, error) {
+	var a *T
+	query := map[string]any{
+		"selector": map[string]string{
+			"id": id,
+		},
+		"limit": 1,
+	}
+	rows := r.db.Find(context.TODO(), query)
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.ScanDoc(&a); err != nil {
+			return nil, err
+		}
+	}
+	return a, nil
+}
+
+func (r Repository[T]) GetByDocId(id string) (*T, error) {
 	var a T
 	if err := r.db.Get(context.TODO(), id).ScanDoc(&a); err != nil {
 		return nil, err

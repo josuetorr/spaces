@@ -46,7 +46,7 @@ func NewActorService(repo ActorRepository) ActorService {
 	return ActorService{repo: repo}
 }
 
-func (s ActorService) ActorCreate(data CreateActorData) error {
+func (s ActorService) ActorCreate(data CreateActorData) (string, error) {
 	id := utils.GetFullId("users", data.Username)
 	a := ap.ActorNew(ap.ID(id), ap.ActivityVocabularyType(data.Type))
 
@@ -62,10 +62,11 @@ func (s ActorService) ActorCreate(data CreateActorData) error {
 	a.Following = ap.IRI(id + "/following")
 	a.Followers = ap.IRI(id + "/followers")
 
-	if err := s.repo.Create(a); err != nil {
-		return err
+	docId, err := s.repo.Create(a)
+	if err != nil {
+		return docId, err
 	}
-	return nil
+	return docId, nil
 }
 
 func (s ActorService) ActorExists(id string) (bool, error) {

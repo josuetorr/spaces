@@ -43,7 +43,7 @@ func (h *PostActorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.actorService.ActorCreate(data); err != nil {
+	if _, err := h.actorService.ActorCreate(data); err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return

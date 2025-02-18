@@ -11,7 +11,7 @@ type (
 )
 
 type ActorService interface {
-	ActorCreate(a services.CreateActorData) error
+	ActorCreate(a services.CreateActorData) (string, error)
 	ActorExists(id string) (bool, error)
 	ActorGetById(id string) (*Actor, error)
 	ActorGetByEmail(email string) (*Actor, error)
@@ -19,7 +19,7 @@ type ActorService interface {
 }
 
 type ActivityService interface {
-	ActivityCreate(a services.CreateActorData) error
+	ActivityCreate(a services.CreateActivityData) (string, error)
 	ActivityExists(id string) (bool, error)
 	ActivityGetById(id string) (*Activity, error)
 }

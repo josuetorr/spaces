@@ -9,6 +9,11 @@ import (
 
 type (
 	Activity           = ap.Activity
+	CreateActivityData struct {
+		Type   string
+		Actor  string
+		Object string
+	}
 	ActivityRepository interface {
 		Repository[Activity]
 	}
@@ -22,12 +27,13 @@ func NewActivityService(log *slog.Logger, activityRepo ActivityRepository) Activ
 	return ActivityService{log: log, repo: activityRepo}
 }
 
-func (s ActivityService) ActivityCreate(data CreateActorData) error {
-	a := ap.ActivityNew(ap.ID("test"), ap.FollowType, ap.ObjectNew(ap.ActorType))
-	if err := s.repo.Create(a); err != nil {
-		return err
+func (s ActivityService) ActivityCreate(data CreateActivityData) (string, error) {
+	a := ap.ActivityNew(ap.EmptyID, ap.ActivityVocabularyType(data.Type), ap.ObjectNew(ap.ActorType))
+	docId, err := s.repo.Create(a)
+	if err != nil {
+		return docId, err
 	}
-	return nil
+	return docId, nil
 }
 
 func (s ActivityService) ActivityExists(id string) (bool, error) {

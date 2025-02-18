@@ -13,12 +13,13 @@ type Storable interface {
 }
 
 type Repository[T Storable] interface {
-	Create(*T) error
+	Create(*T) (string, error)
 	Update(string, T) error
 	Patch(string, T) error
 
 	Exists(string) (bool, error)
 	GetById(string) (*T, error)
+	GetByDocId(string) (*T, error)
 	GetAll() ([]T, error)
 
 	Delete(string, bool) error
