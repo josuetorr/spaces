@@ -1,10 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"reflect"
-	"strings"
-
 	ap "github.com/go-ap/activitypub"
 )
 
