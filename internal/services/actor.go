@@ -84,24 +84,6 @@ func (s ActorService) GetByEmail(email string) (*Actor, error) {
 	return s.repo.GetByEmail(email)
 }
 
-// NOTE: for now, the following collection is not ordered not paginated
-//
-//	{
-//	  "@context": "https://www.w3.org/ns/activitystreams",
-//	  "summary": "Sally's notes",
-//	  "type": "Collection",
-//	  "totalItems": 2,
-//	  "items": [
-//	    {
-//	      "type": "Note",
-//	      "name": "A Simple Note"
-//	    },
-//	    {
-//	      "type": "Note",
-//	      "name": "Another Simple Note"
-//	    }
-//	  ]
-//	}
 func (s ActorService) GetFollowing(id string) (*Collection, error) {
 	userId := utils.GetFullId("users", id)
 
