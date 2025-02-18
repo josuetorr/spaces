@@ -13,6 +13,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"gitlab.com/josuetorr/spaces/internal/data"
 	"gitlab.com/josuetorr/spaces/internal/routes"
+	"gitlab.com/josuetorr/spaces/internal/utils"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 
 	r := routes.SetupRoutes(db, log)
 
-	port := "3000"
+	port := utils.GetServerPort()
 
 	server := &http.Server{
 		Addr:    ":" + port,
