@@ -13,6 +13,7 @@ type (
 		Type   string
 		Actor  string
 		Object string
+		To     []string
 	}
 	ActivityRepository interface {
 		Repository[Activity]
@@ -30,6 +31,7 @@ func NewActivityService(log *slog.Logger, activityRepo ActivityRepository) Activ
 func (s ActivityService) ActivityCreate(data CreateActivityData) (string, error) {
 	a := ap.ActivityNew(ap.EmptyID, ap.ActivityVocabularyType(data.Type), ap.IRI(data.Object))
 	a.Actor = ap.IRI(data.Actor)
+	a.To = []ap.Item{ap.IRI(data.Object)}
 	docId, err := s.repo.Create(a)
 	if err != nil {
 		return docId, err
