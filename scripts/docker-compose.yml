@@ -9,6 +9,7 @@ services:
       - "${COUCHDB_PORT}:5984" # Expose CouchDB on port 5984
     volumes:
       - couchdb-data:/opt/couchdb/data # Persist data on the host machine
+      - ./local.ini:/opt/couchdb/data/local.ini
 
 volumes:
   couchdb-data: # Named volume to persist CouchDB data
