@@ -27,12 +27,20 @@ func (h *PostOutboxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, err := h.activityService.ActivityCreate(data)
+	docId, err := h.activityService.ActivityCreate(data)
 	if err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	client := http.DefaultClient
+	createdActivity, err := h.activityService.ActivityGetById(docId)
+	if err != nil {
+		h.log.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// client := http.DefaultClient
+	println(createdActivity)
 }
