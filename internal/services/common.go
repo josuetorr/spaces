@@ -20,7 +20,7 @@ type Repository[T Storable] interface {
 	Exists(string) (bool, error)
 	GetById(string) (*T, error)
 	GetByDocId(string) (*T, error)
-	GetAll() ([]T, error)
+	GetAll() ([]*T, error)
 
 	Delete(string, bool) error
 }

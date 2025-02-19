@@ -74,7 +74,7 @@ func (r Repository[T]) GetByDocId(id string) (*T, error) {
 	return &a, nil
 }
 
-func (r Repository[T]) GetAll() ([]T, error) {
+func (r Repository[T]) GetAll() ([]*T, error) {
 	panic("implement GetAll")
 }
 
