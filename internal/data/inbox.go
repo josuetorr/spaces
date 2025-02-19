@@ -18,7 +18,7 @@ func NewInboxRepository(log *slog.Logger, db *kivik.DB) InboxRepository {
 
 func (r InboxRepository) GetInboxByActorId(id string) ([]*Activity, error) {
 	opts := kivik.Params(map[string]any{"key": id})
-	rows := r.db.Query(context.TODO(), "_design/inbox", "_view/inbox", opts)
+	rows := r.db.Query(context.TODO(), "_design/inbox", "_view/actor-inbox", opts)
 	defer rows.Close()
 
 	for rows.Next() {
@@ -29,5 +29,5 @@ func (r InboxRepository) GetInboxByActorId(id string) ([]*Activity, error) {
 
 		fmt.Printf("%+v\n", a)
 	}
-	panic("implement repo get inbox by actor id")
+	return nil, nil
 }

@@ -17,7 +17,7 @@ func NewFederationRoutes(
 
 	r.Get("/", handlers.NewGetActorHandler(actorService).ServeHTTP)
 
-	r.Get("/inbox", handlers.NewGetInboxHandler(inboxService).ServeHTTP)
+	r.Get("/inbox", handlers.NewGetInboxHandler(log, inboxService).ServeHTTP)
 	r.Post("/inbox", handlers.NewPostInboxHandler(log, activityService).ServeHTTP)
 
 	r.Get("/outbox", handlers.NewGetOutboxHandler().ServeHTTP)
