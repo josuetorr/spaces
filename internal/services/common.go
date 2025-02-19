@@ -24,3 +24,5 @@ type Repository[T Storable] interface {
 
 	Delete(string, bool) error
 }
+
+type Activity = ap.Activity

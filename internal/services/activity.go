@@ -8,7 +8,6 @@ import (
 )
 
 type (
-	Activity           = ap.Activity
 	CreateActivityData struct {
 		Type   string
 		Actor  string
