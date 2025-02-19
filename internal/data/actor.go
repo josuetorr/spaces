@@ -9,18 +9,17 @@ import (
 	"gitlab.com/josuetorr/spaces/internal/services"
 )
 
-type (
-	Actor     = services.Actor
-	ActorRepo struct {
-		Repository[Actor]
-	}
-)
+type Actor = services.Actor
 
-func NewActorRepo(log *slog.Logger, db *kivik.DB) ActorRepo {
-	return ActorRepo{Repository[ap.Actor]{db: db, log: log}}
+type ActorRepository struct {
+	Repository[Actor]
 }
 
-func (r ActorRepo) GetByEmail(email string) (*Actor, error) {
+func NewActorRepository(log *slog.Logger, db *kivik.DB) ActorRepository {
+	return ActorRepository{Repository[ap.Actor]{db: db, log: log}}
+}
+
+func (r ActorRepository) GetByEmail(email string) (*Actor, error) {
 	var a *Actor
 	query := map[string]any{
 		"selector": map[string]string{
@@ -39,6 +38,6 @@ func (r ActorRepo) GetByEmail(email string) (*Actor, error) {
 	return a, nil
 }
 
-func (r ActorRepo) GetFollowing(id string) (ap.IRIs, error) {
+func (r ActorRepository) GetFollowing(id string) (ap.IRIs, error) {
 	return ap.IRIs{}, nil
 }

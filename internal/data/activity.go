@@ -7,13 +7,12 @@ import (
 	"github.com/go-kivik/kivik/v4"
 )
 
-type (
-	Activity     = ap.Activity
-	ActivityRepo struct {
-		Repository[Activity]
-	}
-)
+type Activity = ap.Activity
 
-func NewActivityRepo(log *slog.Logger, db *kivik.DB) ActivityRepo {
-	return ActivityRepo{Repository[Activity]{log: log, db: db}}
+type ActivityRepository struct {
+	Repository[Activity]
+}
+
+func NewActivityRepository(log *slog.Logger, db *kivik.DB) ActivityRepository {
+	return ActivityRepository{Repository[Activity]{log: log, db: db}}
 }
