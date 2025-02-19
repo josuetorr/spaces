@@ -23,7 +23,7 @@ func (r InboxRepository) GetInboxByActorId(id string) ([]*Activity, error) {
 
 	for rows.Next() {
 		var a *Activity
-		if err := rows.ScanDoc(a); err != nil {
+		if err := rows.ScanValue(&a); err != nil {
 			return nil, err
 		}
 
