@@ -7,12 +7,17 @@ import (
 	"gitlab.com/josuetorr/spaces/internal/handlers"
 )
 
-func NewFederationRoutes(actorService handlers.ActorService, activityService handlers.ActivityService, log *slog.Logger) chi.Router {
+func NewFederationRoutes(
+	actorService handlers.ActorService,
+	activityService handlers.ActivityService,
+	inboxService handlers.InboxService,
+	log *slog.Logger,
+) chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/", handlers.NewGetActorHandler(actorService).ServeHTTP)
 
-	r.Get("/inbox", handlers.NewGetInboxHandler().ServeHTTP)
+	r.Get("/inbox", handlers.NewGetInboxHandler(inboxService).ServeHTTP)
 	r.Post("/inbox", handlers.NewPostInboxHandler(log, activityService).ServeHTTP)
 
 	r.Get("/outbox", handlers.NewGetOutboxHandler().ServeHTTP)

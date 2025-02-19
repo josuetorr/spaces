@@ -12,11 +12,13 @@ import (
 )
 
 func SetupRoutes(db *kivik.DB, log *slog.Logger) chi.Router {
-	actorRepo := data.NewActorRepo(log, db)
-	activityRepo := data.NewActivityRepo(log, db)
+	actorRepo := data.NewActorRepository(log, db)
+	activityRepo := data.NewActivityRepository(log, db)
+	inboxRepo := data.NewInboxRepository(log, db)
 
 	actorService := services.NewActorService(actorRepo)
 	activityService := services.NewActivityService(log, activityRepo)
+	inboxService := services.NewInboxService(inboxRepo)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -24,7 +26,7 @@ func SetupRoutes(db *kivik.DB, log *slog.Logger) chi.Router {
 	r.Get("/.well-known/webfinger", handlers.NewWebFingerHandler(log, actorService).ServeHTTP)
 
 	r.Mount("/users", NewUserRoutes(actorService, log))
-	r.Mount("/users/{username}", NewFederationRoutes(actorService, activityService, log))
+	r.Mount("/users/{username}", NewFederationRoutes(actorService, activityService, inboxService, log))
 
 	return r
 }
