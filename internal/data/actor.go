@@ -39,5 +39,6 @@ func (r ActorRepository) GetByEmail(email string) (*Actor, error) {
 }
 
 func (r ActorRepository) GetFollowing(id string) (ap.IRIs, error) {
-	return ap.IRIs{}, nil
+	// return ap.IRIs{}, nil
+	panic("implement get actor following")
 }
