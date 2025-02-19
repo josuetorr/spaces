@@ -30,8 +30,6 @@ func (data CreateActorData) Validate() error {
 }
 
 type (
-	Actor           = ap.Actor
-	Collection      = ap.Collection
 	ActorRepository interface {
 		Repository[Actor]
 		GetByEmail(string) (*Actor, error)

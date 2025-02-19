@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"github.com/go-kivik/kivik/v4"
@@ -21,13 +20,14 @@ func (r InboxRepository) GetInboxByActorId(id string) ([]*Activity, error) {
 	rows := r.db.Query(context.TODO(), "_design/inbox", "_view/actor-inbox", opts)
 	defer rows.Close()
 
+	var as []*Activity
 	for rows.Next() {
 		var a *Activity
 		if err := rows.ScanValue(&a); err != nil {
 			return nil, err
 		}
-
-		fmt.Printf("%+v\n", a)
+		as = append(as, a)
 	}
-	return nil, nil
+
+	return as, nil
 }

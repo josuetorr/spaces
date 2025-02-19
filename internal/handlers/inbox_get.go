@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 )
 
 type InboxService interface {
-	GetInboxByActorId(id string) ([]*Activity, error)
+	GetInboxByActorId(id string) (*Collection, error)
 }
 
 type GetInboxHandler struct {
@@ -26,12 +27,13 @@ func (h *GetInboxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 	id := utils.GetFullId("users", username)
 
-	as, err := h.inboxServce.GetInboxByActorId(id)
+	activityCollection, err := h.inboxServce.GetInboxByActorId(id)
 	if err != nil {
 		h.log.Error(err.Error())
 		http.Error(w, "Unable to fetch inbox", http.StatusBadRequest)
 		return
 	}
 
-	fmt.Printf("%+v\n", as)
+	w.Header().Set("Content-Type", ActivityPubContentType)
+	json.NewEncoder(w).Encode(activityCollection)
 }
