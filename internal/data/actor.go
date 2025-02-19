@@ -16,7 +16,7 @@ type ActorRepository struct {
 }
 
 func NewActorRepository(log *slog.Logger, db *kivik.DB) ActorRepository {
-	return ActorRepository{Repository[ap.Actor]{db: db, log: log}}
+	return ActorRepository{Repository[Actor]{db: db, log: log}}
 }
 
 func (r ActorRepository) GetByEmail(email string) (*Actor, error) {
